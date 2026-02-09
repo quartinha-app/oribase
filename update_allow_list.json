@@ -1,0 +1,3 @@
+{
+    "uri_allow_list": "http://localhost:3000/dashboard,http://localhost:3000/admin,http://localhost:3000/area-profissional,http://localhost:3000/leader-dashboard,http://localhost:3000/reset-password,https://oribase.com.br/dashboard,https://oribase.com.br/admin,https://oribase.com.br/area-profissional,https://oribase.com.br/leader-dashboard,https://oribase.com.br/reset-password"
+}

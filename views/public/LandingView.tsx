@@ -200,6 +200,16 @@ const LandingView: React.FC = () => {
     getPublicFAQs('supporter_rules').then(setFaqs).catch(console.error);
   }, []);
 
+  // Auto-redirect authenticated users to their dashboard
+  useEffect(() => {
+    if (user && profile) {
+      const targetPath = profile.role === 'admin' ? '/admin' :
+        profile.role === 'lider_terreiro' ? '/leader-dashboard' :
+          profile.role === 'fornecedor' ? '/area-profissional' : '/dashboard';
+      navigate(targetPath, { replace: true });
+    }
+  }, [user, profile, navigate]);
+
   const { inProgress, finished, upcoming, totalCount } = campaignData;
   const aboutTitle = aboutContent.find(c => c.key === 'title')?.content || 'O que é o OríBase?';
   const aboutText = aboutContent.find(c => c.key === 'content')?.content || 'Carregando...';
