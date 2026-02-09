@@ -1,0 +1,8 @@
+{
+    "smtp_admin_email": "atendimento@oribase.com.br",
+    "smtp_host": "mail.oribase.com.br",
+    "smtp_port": 587,
+    "smtp_user": "atendimento@oribase.com.br",
+    "smtp_pass": "Atorigeral@1",
+    "smtp_sender_name": "OríBase"
+}
