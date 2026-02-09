@@ -10,7 +10,9 @@ const LoginView: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [magicLinkLoading, setMagicLinkLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
   React.useEffect(() => {
@@ -26,6 +28,7 @@ const LoginView: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setSuccess(null);
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -34,9 +37,59 @@ const LoginView: React.FC = () => {
       });
 
       if (error) throw error;
-      // Auth state change will handle navigation via useEffect or context
     } catch (err: any) {
       setError(err.message || 'Erro ao fazer login');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMagicLink = async () => {
+    if (!email) {
+      setError('Por favor, insira seu e-mail para receber o acesso rápido.');
+      return;
+    }
+
+    setMagicLinkLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+        },
+      });
+
+      if (error) throw error;
+      setSuccess('Link de acesso rápido enviado para seu e-mail!');
+    } catch (err: any) {
+      setError(err.message || 'Erro ao enviar link mágico');
+    } finally {
+      setMagicLinkLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError('Por favor, insira seu e-mail para recuperar a senha.');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) throw error;
+      setSuccess('E-mail de recuperação enviado! Verifique sua caixa de entrada.');
+    } catch (err: any) {
+      setError(err.message || 'Erro ao enviar e-mail de recuperação');
     } finally {
       setLoading(false);
     }
@@ -64,48 +117,78 @@ const LoginView: React.FC = () => {
             <p className="text-text-secondary mt-2">Bem-vindo de volta.</p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-6 bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+          <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 space-y-6">
             {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg">{error}</div>}
+            {success && <div className="p-3 bg-green-50 text-green-600 text-sm rounded-lg">{success}</div>}
 
-            <div className="space-y-1">
-              <label className="text-sm font-bold text-text-main">E-mail</label>
-              <input
-                type="email"
-                required
-                className="w-full h-12 rounded-xl border-gray-200 focus:ring-primary focus:border-primary px-3"
-                placeholder="exemplo@axe.org.br"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-sm font-bold text-text-main">Senha</label>
-              <div className="relative">
+            <form onSubmit={handleLogin} className="space-y-6">
+              <div className="space-y-1">
+                <label className="text-sm font-bold text-text-main">E-mail</label>
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type="email"
                   required
-                  className="w-full h-12 rounded-xl border-gray-200 focus:ring-primary focus:border-primary px-3 pr-10"
-                  placeholder="********"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  className="w-full h-12 rounded-xl border-gray-200 focus:ring-primary focus:border-primary px-3"
+                  placeholder="exemplo@axe.org.br"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors"
-                >
-                  <span className="material-symbols-outlined text-xl">{showPassword ? 'visibility_off' : 'visibility'}</span>
-                </button>
+              </div>
+              <div className="space-y-1">
+                <div className="flex justify-between items-center">
+                  <label className="text-sm font-bold text-text-main">Senha</label>
+                  <button
+                    type="button"
+                    onClick={handleForgotPassword}
+                    className="text-xs text-primary font-semibold hover:underline"
+                  >
+                    Esqueceu a senha?
+                  </button>
+                </div>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    className="w-full h-12 rounded-xl border-gray-200 focus:ring-primary focus:border-primary px-3 pr-10"
+                    placeholder="********"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-xl">{showPassword ? 'visibility_off' : 'visibility'}</span>
+                  </button>
+                </div>
+              </div>
+              <button
+                type="submit"
+                disabled={loading || magicLinkLoading}
+                className="w-full h-12 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+              >
+                {loading ? 'Entrando...' : 'Entrar'} <span className="material-symbols-outlined">arrow_forward</span>
+              </button>
+            </form>
+
+            <div className="relative py-4">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-100"></div>
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-gray-400">Ou</span>
               </div>
             </div>
+
             <button
-              type="submit"
-              disabled={loading}
-              className="w-full h-12 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+              onClick={handleMagicLink}
+              disabled={loading || magicLinkLoading}
+              className="w-full h-12 bg-white text-text-main border-2 border-gray-100 font-bold rounded-xl hover:bg-gray-50 transition-all flex items-center justify-center gap-2 disabled:opacity-70"
             >
-              {loading ? 'Entrando...' : 'Entrar'} <span className="material-symbols-outlined">arrow_forward</span>
+              <span className="material-symbols-outlined">bolt</span>
+              {magicLinkLoading ? 'Enviando...' : 'Acesso rápido por e-mail'}
             </button>
-          </form>
+          </div>
 
           <p className="text-center text-sm text-text-secondary">
             Ainda não tem conta? <Link to="/register" className="text-primary font-bold hover:underline">Criar conta</Link>.

@@ -34,6 +34,7 @@ import ProfessionalRegistration from './views/professional/ProfessionalRegistrat
 import ServicesManager from './views/professional/ServicesManager';
 import SubscriptionManager from './views/professional/SubscriptionManager';
 import PublicCampaignResults from './views/public/PublicCampaignResults';
+import ResetPasswordView from './views/auth/ResetPasswordView';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import AdminRoute from './components/auth/AdminRoute';
@@ -50,6 +51,7 @@ function App() {
           <Route path="/" element={<LandingView />} />
           <Route path="/login" element={<LoginView />} />
           <Route path="/register" element={<RegisterView />} />
+          <Route path="/reset-password" element={<ResetPasswordView />} />
           <Route path="/select-profile" element={<ProfileSelectionView />} />
           <Route path="/pesquisa/:slug" element={<SurveyRenderer />} />
           <Route path="/survey/:slug" element={<SurveyRenderer />} />
