@@ -14,7 +14,7 @@ const UserList: React.FC = () => {
         email: '',
         password: '',
         fullName: '',
-        role: 'lider_terreiro' as UserRole,
+        role: 'admin' as UserRole,
         jobRole: '',
         bio: '',
         showOnLanding: false
@@ -110,7 +110,7 @@ const UserList: React.FC = () => {
     const handleClosePanel = () => {
         setIsPanelOpen(false);
         setEditingUser(null);
-        setFormData({ email: '', password: '', fullName: '', role: 'lider_terreiro', jobRole: '', bio: '', showOnLanding: false });
+        setFormData({ email: '', password: '', fullName: '', role: 'admin', jobRole: '', bio: '', showOnLanding: false });
     };
 
     const roles: UserRole[] = ['admin', 'pesquisador'];
