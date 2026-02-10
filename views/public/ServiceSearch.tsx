@@ -65,21 +65,32 @@ const ServiceSearch: React.FC = () => {
                             Conecte-se com advogados, contadores, artesãos e prestadores de serviço da nossa comunidade.
                         </p>
                     </div>
-                    {user && (
-                        <button
-                            onClick={() => {
-                                const role = profile?.role;
-                                if (role === 'admin') navigate('/admin');
-                                else if (role === 'lider_terreiro') navigate('/leader-dashboard');
-                                else if (role === 'fornecedor') navigate('/area-profissional');
-                                else navigate('/dashboard');
-                            }}
-                            className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-secondary/20 text-secondary rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-secondary hover:text-white transition-all shadow-lg shadow-secondary/5 group"
-                        >
-                            <span className="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
-                            Voltar para o Meu Painel
-                        </button>
-                    )}
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        {!user && (
+                            <button
+                                onClick={() => navigate('/register?role=fornecedor')}
+                                className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-primary-dark transition-all shadow-lg shadow-primary/20"
+                            >
+                                <span className="material-symbols-outlined">person_add</span>
+                                Cadastre-se
+                            </button>
+                        )}
+                        {user && (
+                            <button
+                                onClick={() => {
+                                    const role = profile?.role;
+                                    if (role === 'admin') navigate('/admin');
+                                    else if (role === 'lider_terreiro') navigate('/leader-dashboard');
+                                    else if (role === 'fornecedor') navigate('/area-profissional');
+                                    else navigate('/dashboard');
+                                }}
+                                className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-secondary/20 text-secondary rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-secondary hover:text-white transition-all shadow-lg shadow-secondary/5 group"
+                            >
+                                <span className="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                                Voltar para o Meu Painel
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Search Bar & Filters */}

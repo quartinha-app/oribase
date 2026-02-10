@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { IMAGES } from '../../constants';
 import { supabase } from '../../services/supabase';
 
 const RegisterView: React.FC = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -15,6 +16,15 @@ const RegisterView: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [acceptTerms, setAcceptTerms] = useState(false);
+
+    // Pre-select role from URL parameter
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const roleParam = params.get('role');
+        if (roleParam === 'fornecedor') {
+            setRole('fornecedor');
+        }
+    }, [location]);
 
     const calculateStrength = (pass: string) => {
         let score = 0;

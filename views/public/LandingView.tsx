@@ -37,7 +37,7 @@ const ProfessionalsListPreview: React.FC = () => {
     <div className="bg-white rounded-[32px] p-12 text-center border border-dashed border-gray-200">
       <span className="material-symbols-outlined text-4xl text-gray-300 mb-4">engineering</span>
       <p className="text-gray-400 font-bold uppercase tracking-widest text-sm">A rede está crescendo! Em breve novos profissionais.</p>
-      <Link to="/servicos" className="inline-block mt-6 text-primary font-black uppercase text-xs tracking-widest border-b border-primary/20 hover:border-primary">Cadastre-se como profissional</Link>
+      <Link to="/register?role=fornecedor" className="inline-block mt-6 text-primary font-black uppercase text-xs tracking-widest border-b border-primary/20 hover:border-primary">Cadastre-se como profissional</Link>
     </div>
   );
 
@@ -216,6 +216,13 @@ const LandingView: React.FC = () => {
   const aboutImage = aboutContent.find(c => c.key === 'image_url')?.content;
   const contactEmail = contactContent.find(c => c.key === 'email')?.content || 'contato@oribase.org.br';
   const contactPhone = contactContent.find(c => c.key === 'phone')?.content || '(00) 00000-0000';
+
+  // Helper function to ensure URL has protocol
+  const ensureUrlProtocol = (url?: string) => {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return `https://${url}`;
+  };
 
   const socialLinks = {
     instagram: socialContent.find(c => c.key === 'instagram')?.content,
@@ -435,22 +442,72 @@ const LandingView: React.FC = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {partners.map(p => (
-              <div key={p.id} className="bg-white p-8 rounded-[40px] border border-gray-100 shadow-sm hover:shadow-xl transition-all flex flex-col group">
-                <div className="size-20 bg-gray-50/50 rounded-2xl p-4 flex items-center justify-center mb-6 group-hover:bg-white transition-colors border border-transparent group-hover:border-gray-100">
+              <div key={p.id} className="bg-white p-8 rounded-[40px] border border-gray-100 shadow-sm hover:shadow-xl transition-all flex flex-col group h-full">
+                <div className="size-32 bg-gray-50/50 rounded-2xl p-4 flex items-center justify-center mb-6 group-hover:bg-white transition-colors border border-transparent group-hover:border-gray-100 mx-auto">
                   {p.logo_url ? (
                     <img src={p.logo_url} className="w-full h-full object-contain" alt={p.name} />
                   ) : (
-                    <span className="material-symbols-outlined text-gray-300">verified</span>
+                    <span className="material-symbols-outlined text-gray-300 text-4xl">verified</span>
                   )}
                 </div>
-                <h3 className="font-black text-text-main uppercase mb-3 tracking-tight">{p.name}</h3>
-                {p.description && <p className="text-text-secondary text-sm font-bold line-clamp-3 mb-6 flex-grow">{p.description}</p>}
-                {p.url && (
-                  <a href={p.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-primary text-[10px] font-black uppercase tracking-widest hover:translate-x-1 transition-transform">
-                    Saiba Mais
-                    <span className="material-symbols-outlined text-sm">open_in_new</span>
-                  </a>
-                )}
+                <h3 className="font-black text-text-main uppercase mb-3 tracking-tight text-center">{p.name}</h3>
+                {p.description && <p className="text-text-secondary text-sm font-bold line-clamp-3 mb-6 flex-grow text-center">{p.description}</p>}
+
+                <div className="mt-auto space-y-4">
+                  <div className="flex gap-2 justify-center">
+                    {p.url && (
+                      <a
+                        href={ensureUrlProtocol(p.url)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 inline-flex items-center justify-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all"
+                      >
+                        Visitar
+                        <span className="material-symbols-outlined text-sm">open_in_new</span>
+                      </a>
+                    )}
+                    <button
+                      onClick={() => {
+                        const text = `Conheça ${p.name} no OríBase: ${window.location.href}`;
+                        if (navigator.share) {
+                          navigator.share({ title: p.name, text, url: p.url || window.location.href }).catch(console.error);
+                        } else {
+                          navigator.clipboard.writeText(text);
+                          alert('Link copiado!');
+                        }
+                      }}
+                      className="size-9 flex items-center justify-center bg-gray-50 text-gray-400 rounded-xl hover:bg-primary hover:text-white transition-all"
+                      title="Compartilhar"
+                    >
+                      <span className="material-symbols-outlined text-sm">share</span>
+                    </button>
+                  </div>
+
+                  {(p.instagram || p.facebook || p.linkedin || p.whatsapp) && (
+                    <div className="flex items-center justify-center gap-3 pt-4 border-t border-gray-50">
+                      {p.instagram && (
+                        <a href={ensureUrlProtocol(p.instagram)} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-primary transition-colors">
+                          <Instagram className="size-4" />
+                        </a>
+                      )}
+                      {p.facebook && (
+                        <a href={ensureUrlProtocol(p.facebook)} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-primary transition-colors">
+                          <Facebook className="size-4" />
+                        </a>
+                      )}
+                      {p.linkedin && (
+                        <a href={ensureUrlProtocol(p.linkedin)} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-primary transition-colors">
+                          <Linkedin className="size-4" />
+                        </a>
+                      )}
+                      {p.whatsapp && (
+                        <a href={ensureUrlProtocol(p.whatsapp)} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-primary transition-colors">
+                          <MessageCircle className="size-4" />
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -466,12 +523,20 @@ const LandingView: React.FC = () => {
               <h2 className="text-4xl font-black text-text-main uppercase tracking-tight">Rede de <span className="text-primary">Profissionais</span></h2>
               <p className="mt-4 text-text-secondary text-lg font-medium max-w-xl">Encontre especialistas, serviços e produtos da nossa comunidade validados e avaliados.</p>
             </div>
-            <Link to="/servicos">
-              <button className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 text-text-main rounded-xl font-bold uppercase tracking-wide hover:border-primary hover:text-primary transition-all shadow-sm">
-                Ver todos os profissionais
-                <span className="material-symbols-outlined">arrow_forward</span>
-              </button>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link to="/register?role=fornecedor">
+                <button className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl font-bold uppercase tracking-wide hover:bg-primary-dark transition-all shadow-lg shadow-primary/20">
+                  Cadastre-se
+                  <span className="material-symbols-outlined">person_add</span>
+                </button>
+              </Link>
+              <Link to="/servicos">
+                <button className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 text-text-main rounded-xl font-bold uppercase tracking-wide hover:border-primary hover:text-primary transition-all shadow-sm">
+                  Ver todos os profissionais
+                  <span className="material-symbols-outlined">arrow_forward</span>
+                </button>
+              </Link>
+            </div>
           </div>
 
           <ProfessionalsListPreview />

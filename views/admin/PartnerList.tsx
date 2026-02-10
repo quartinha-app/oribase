@@ -15,7 +15,11 @@ const PartnerList: React.FC = () => {
         defaultValues: {
             active: true,
             type: 'institutional',
-            logo_url: ''
+            logo_url: '',
+            instagram: '',
+            facebook: '',
+            linkedin: '',
+            whatsapp: ''
         }
     });
 
@@ -40,6 +44,12 @@ const PartnerList: React.FC = () => {
             const partnerData = { ...data };
             if (!partnerData.id) delete partnerData.id;
 
+            // Remove empty social media fields to avoid constraint issues
+            if (!partnerData.instagram || partnerData.instagram.trim() === '') delete partnerData.instagram;
+            if (!partnerData.facebook || partnerData.facebook.trim() === '') delete partnerData.facebook;
+            if (!partnerData.linkedin || partnerData.linkedin.trim() === '') delete partnerData.linkedin;
+            if (!partnerData.whatsapp || partnerData.whatsapp.trim() === '') delete partnerData.whatsapp;
+
             if (partnerData.id) {
                 await updatePartner(partnerData.id, partnerData);
                 alert('Parceiro atualizado!');
@@ -62,7 +72,7 @@ const PartnerList: React.FC = () => {
 
     const handleClosePanel = () => {
         setIsPanelOpen(false);
-        partnerForm.reset({ active: true, type: 'institutional', logo_url: '' });
+        partnerForm.reset({ active: true, type: 'institutional', logo_url: '', instagram: '', facebook: '', linkedin: '', whatsapp: '' });
     };
 
     const handleDeletePartner = async (id: string) => {
@@ -236,6 +246,48 @@ const PartnerList: React.FC = () => {
                                     className="w-full border-gray-100 bg-gray-50/50 p-5 rounded-[20px] focus:ring-4 ring-primary/5 outline-none transition-all font-bold text-text-main"
                                     placeholder="Fale um pouco sobre este parceiro..."
                                 />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+                                <div className="md:col-span-2">
+                                    <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-4">Redes Sociais</h4>
+                                </div>
+
+                                <div>
+                                    <label className="block text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3">Instagram</label>
+                                    <input
+                                        {...partnerForm.register('instagram')}
+                                        className="w-full border-gray-100 bg-gray-50/50 p-5 rounded-[20px] focus:ring-4 ring-primary/5 outline-none transition-all font-bold text-text-main"
+                                        placeholder="URL do Instagram"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3">Facebook</label>
+                                    <input
+                                        {...partnerForm.register('facebook')}
+                                        className="w-full border-gray-100 bg-gray-50/50 p-5 rounded-[20px] focus:ring-4 ring-primary/5 outline-none transition-all font-bold text-text-main"
+                                        placeholder="URL do Facebook"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3">LinkedIn</label>
+                                    <input
+                                        {...partnerForm.register('linkedin')}
+                                        className="w-full border-gray-100 bg-gray-50/50 p-5 rounded-[20px] focus:ring-4 ring-primary/5 outline-none transition-all font-bold text-text-main"
+                                        placeholder="URL do LinkedIn"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3">WhatsApp</label>
+                                    <input
+                                        {...partnerForm.register('whatsapp')}
+                                        className="w-full border-gray-100 bg-gray-50/50 p-5 rounded-[20px] focus:ring-4 ring-primary/5 outline-none transition-all font-bold text-text-main"
+                                        placeholder="Link do WhatsApp"
+                                    />
+                                </div>
                             </div>
 
                             <div className="pt-4">

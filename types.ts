@@ -124,6 +124,10 @@ export interface Partner {
   type: string;
   active: boolean;
   description?: string;
+  instagram?: string;
+  facebook?: string;
+  linkedin?: string;
+  whatsapp?: string;
 }
 
 export interface FAQ {
